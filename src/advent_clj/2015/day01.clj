@@ -26,5 +26,6 @@
          (- (count input) (count steps))
          (recur current remaining))))))
 
-(println "2015 Day 01, Part 1: " part1)
-(println "2015 Day 01, Part 2: " part2)
+(defn -main []
+  (println "2015 Day 01, Part 1: " part1)
+  (println "2015 Day 01, Part 2: " part2))

@@ -25,5 +25,6 @@
   (time 
     (reduce + (map calc-ribbon sorted-input))))
 
-(println "2015 Day 02, Part 1: " part1)
-(println "2015 Day 02, Part 2: " part2)
+(defn -main []
+  (println "2015 Day 02, Part 1: " part1)
+  (println "2015 Day 02, Part 2: " part2))

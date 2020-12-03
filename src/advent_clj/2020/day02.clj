@@ -14,9 +14,9 @@
   "Checks to see if the formatted entry is valid accoring to part 1"
   [[[mn mx] letter pass]]
   (let [occurrences (get (frequencies pass) letter)]
-    (cond (nil? occurrences) false
-          (and (>= occurrences mn) (<= occurrences mx)) true
-          :else false)))
+    (if (nil? occurrences)
+      false
+      (and (>= occurrences mn) (<= occurrences mx)))))
 
 (defn valid-pass??
   "Checks to see if the formatted entry is valid accoring to part 2"

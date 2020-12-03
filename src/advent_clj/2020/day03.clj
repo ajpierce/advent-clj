@@ -3,6 +3,7 @@
   (:gen-class))
 
 (def input (get-puzzle-input "2020/day03.txt"))
+(def deltas [[1 1] [3 1] [5 1] [7 1] [1 2]])  ;; For part 2
 
 (defn traverse [dx dy]
   (loop [idx 0 slope input trees 0]
@@ -12,11 +13,9 @@
           (recur (+ dx idx) (nthrest slope dy) (+ trees t))))))
 
 (def part1 (traverse 3 1))
-
-(def part2
-  (let [deltas [[1 1] [3 1] [5 1] [7 1] [1 2]]]
-    (->> (map #(apply traverse %) deltas)
-         (reduce *))))
+(def part2 (->> deltas
+                (map #(apply traverse %))
+                (reduce *)))
 
 (defn -main []
   (println "Advent of Code 2020-03.1:" part1)

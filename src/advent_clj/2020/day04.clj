@@ -22,14 +22,14 @@
   (subset? #{"byr" "iyr" "eyr" "hgt" "hcl" "ecl" "pid"}
            (into #{} (keys passport))))
 
-(defn valid-ecl? [ecl] (contains? #{"amb" "blu" "brn" "gry" "grn" "hzl" "oth"} ecl))
-(defn valid-byr? [byr] (contains? (set (map str (range 1920 2003))) byr))
-(defn valid-iyr? [iyr] (contains? (set (map str (range 2010 2021))) iyr))
-(defn valid-eyr? [eyr] (contains? (set (map str (range 2020 2031))) eyr))
-(defn valid-hcl? [hcl] (some? (re-matches #"^#[0-9a-f]{6}$" hcl)))
-(defn valid-pid? [pid] (some? (re-matches #"^[0-9]{9}$" pid)))
-(defn valid-hgt? [hgt]
-  (let [[_ len unit] (re-matches #"^([0-9]{2,3})(in|cm)$" hgt)
+(defn valid-ecl? [x] (contains? #{"amb" "blu" "brn" "gry" "grn" "hzl" "oth"} x))
+(defn valid-byr? [x] (contains? (set (map str (range 1920 2003))) x))
+(defn valid-iyr? [x] (contains? (set (map str (range 2010 2021))) x))
+(defn valid-eyr? [x] (contains? (set (map str (range 2020 2031))) x))
+(defn valid-hcl? [x] (some? (re-matches #"^#[0-9a-f]{6}$" x)))
+(defn valid-pid? [x] (some? (re-matches #"^[0-9]{9}$" x)))
+(defn valid-hgt? [x]
+  (let [[_ len unit] (re-matches #"^([0-9]{2,3})(in|cm)$" x)
         valid-cm (set (map str (range 150 194)))
         valid-in (set (map str (range 59 77)))]
     (cond (and (= "cm" unit) (contains? valid-cm len)) true

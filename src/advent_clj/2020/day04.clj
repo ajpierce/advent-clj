@@ -8,7 +8,9 @@
 
 (defn into-hashmap [x]
   (apply hash-map (s/split x #"( |\:)")))
+
 (def make-passport (comp into-hashmap #(s/join " " %)))
+
 (def passports (->> input
                     (partition-by empty?)
                     (remove #(= '("") %))

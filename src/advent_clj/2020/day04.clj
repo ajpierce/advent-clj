@@ -18,10 +18,9 @@
        (remove #(= '("") %))
        (map make-passport)))
 
-(def required-fields #{"byr" "iyr" "eyr" "hgt" "hcl" "ecl" "pid"})
-
 (defn valid? [passport]
-  (subset? required-fields (into #{} (keys passport))))
+  (subset? #{"byr" "iyr" "eyr" "hgt" "hcl" "ecl" "pid"}
+           (into #{} (keys passport))))
 
 (defn valid-ecl? [ecl] (contains? #{"amb" "blu" "brn" "gry" "grn" "hzl" "oth"} ecl))
 (defn valid-byr? [byr] (contains? (set (map str (range 1920 2003))) byr))

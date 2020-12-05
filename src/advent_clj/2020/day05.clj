@@ -7,23 +7,14 @@
 (defn to-binary [^Character c]
   (case c \B 1 \F 0 \R 1 \L 0))
 
-(def joincast (comp #(Integer/parseInt % 2)
-                    #(apply str %)))
+(def get-id (comp #(Integer/parseInt % 2)
+                  #(apply str %)
+                  #(map to-binary %)))
 
-(defn get-id [[row col]]
-  (+ col (* row 8)))
-
-(defn parse-pass [^String p]
-  (->> p
-       (map to-binary)
-       (split-at 7)
-       (map joincast)
-       (get-id)))
-
-(def part1 (->> input (map parse-pass) (apply max)))
+(def part1 (->> input (map get-id) (apply max)))
 
 (def part2
-  (loop [remaining (->> input (map parse-pass) sort)]
+  (loop [remaining (->> input (map get-id) sort)]
     (let [[a b & others] remaining]
       (cond
         (empty? remaining) nil

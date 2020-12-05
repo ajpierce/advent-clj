@@ -1,6 +1,5 @@
 (ns advent-clj.2020.day05
-  (:require [advent-clj.core :refer [get-puzzle-input]]
-            [clojure.string :as s])
+  (:require [advent-clj.core :refer [get-puzzle-input]])
   (:gen-class))
 
 (def input (get-puzzle-input "2020/day05.txt"))

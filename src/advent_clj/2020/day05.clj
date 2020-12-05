@@ -13,13 +13,10 @@
 
 (def part1 (->> input (map get-id) (apply max)))
 
-(def part2
-  (loop [remaining (->> input (map get-id) sort)]
-    (let [[a b & others] remaining]
-      (cond
-        (empty? remaining) nil
-        (> (- b a) 1) (- b 1)
-        :else (recur (cons b others))))))
+(def part2 (->> input (map get-id) sort
+                (partition 2 1)
+                (remove (fn [[a b]] (= 1 (- b a))))
+                first first inc))
 
 (defn -main []
   (println "Advent of Code 2020-05.1:" part1)

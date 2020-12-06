@@ -4,17 +4,17 @@
 
 (def input (get-partitioned-input "2020/day06.txt"))
 
-(defn into-sets [group]
-  (->> group (map seq) (map #(into #{} %))))
+(def into-set
+  (comp #(into #{} %) seq))
 
-(def count-set-unions
-  (comp count #(apply union %) into-sets))
+(def count-unions
+  (comp count #(apply union %) #(map into-set %)))
 
-(def count-set-intersections
-  (comp count #(apply intersection %) into-sets))
+(def count-intersections
+  (comp count #(apply intersection %) #(map into-set %)))
 
-(def part1 (->> input (map count-set-unions) (reduce +)))
-(def part2 (->> input (map count-set-intersections) (reduce +)))
+(def part1 (->> input (map count-unions) (reduce +)))
+(def part2 (->> input (map count-intersections) (reduce +)))
 
 (defn -main []
   (println "Advent of Code 2020-06.1:" part1)

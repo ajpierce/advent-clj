@@ -13,3 +13,13 @@
     (if (= 1 (count lines))
       (first lines)
       lines)))
+
+(defn get-partitioned-input
+  "Return puzzle input as groups partitioned by \n\n"
+  [^String filename]
+  (let [lines (-> (io/resource filename)
+                  slurp
+                  clojure.string/split-lines)]
+    (->> lines
+         (partition-by empty?)
+         (remove #(= '("") %)))))

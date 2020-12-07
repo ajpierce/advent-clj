@@ -12,17 +12,11 @@
   (let [[_ qty color] (re-matches #"^(\d{1,2})? (.*)$" bag)]
     [color (if (some? qty) (#(Integer/parseInt qty)) 0)]))
 
-(defn bag-reducer [xf]
-  (fn [acc [bag & contents]] (assoc acc bag (xf contents))))
+(def bags
+  (reduce (fn [acc [bag & contents]] (assoc acc bag (map parse-bag contents))) {} input))
 
-(def just-bags (reduce (bag-reducer #(set (map (comp first parse-bag) %))) {} input))
-
-(def quantified-bags (reduce (bag-reducer #(map parse-bag %)) {} input))
-
-(defn get-containers [^String bag]
-  (->> just-bags
-       (filter (fn [[_ v]] (contains? v bag)))
-       keys))
+(def get-containers
+  (memoize (fn [^String bag] (keys (filter (fn [[_ v]] (contains? (set (map first v)) bag)) bags)))))
 
 (def part1
   (loop [eligible #{} to-process ["shiny gold"]]
@@ -32,15 +26,15 @@
                  (concat (rest to-process) containers))))))
 
 (defn get-contents [bag]
-  (let [contents (get quantified-bags bag)]
+  (let [contents (get bags bag)]
     (if (= '([nil 0]) contents) 0
         (map (fn [[color, qty]] (if (some? color) [(get-contents color) qty] 0)) contents))))
 
 (defn compute-qty [contents]
   (cond
     (number? contents) contents
-    (vector? contents) (let [[more qty] contents]
-                         (+ qty (* qty (compute-qty more))))
+    (vector? contents) (let [[others qty] contents]
+                         (+ qty (* qty (compute-qty others))))
     (seq? contents)    (apply + (map compute-qty contents))))
 
 (defn -main []

@@ -39,8 +39,9 @@
 (defn compute-qty [contents]
   (cond
     (number? contents) contents
-    (vector? contents) (+ (last contents) (* (last contents) (compute-qty (first contents))))
-    (seq? contents) (apply + (map compute-qty contents))
+    (vector? contents) (let [[more qty] contents]
+                         (+ qty (* qty (compute-qty more))))
+    (seq? contents)    (apply + (map compute-qty contents))
     :else 0))
 
 (defn -main []

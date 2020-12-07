@@ -4,13 +4,13 @@
 
 (def input (get-puzzle-input "2020/day07.txt"))
 
-(defn parse-bag [^String bag]
-  (let [[_ qty color] (re-matches #"^(\d{1,2})? (.*)$" bag)]
-    [color qty]))
-
 (def clean (comp #(map s/trim %)
                  #(s/split % #"( contain |,)")
                  #(s/replace % #"(bag(s?)|\.)" "")))
+
+(defn parse-bag [^String bag]
+  (let [[_ qty color] (re-matches #"^(\d{1,2})? (.*)$" bag)]
+    [color (if (some? qty) (#(Integer/parseInt qty)) 0)]))
 
 (defn just-bags-reducer [acc [bag & contents]]
   (assoc acc bag (set (map (comp first parse-bag) contents))))
@@ -19,7 +19,7 @@
 
 (defn get-containers [^String bag]
   (->> just-bags
-       (filter (fn [[k v]] (contains? v bag)))
+       (filter (fn [[_ v]] (contains? v bag)))
        keys))
 
 (def part1
@@ -29,21 +29,23 @@
           (recur (apply conj eligible containers)
                  (concat (rest to-process) containers))))))
 
-(comment
+(defn quantified-bags-reducer [acc [bag & contents]]
+  (assoc acc bag (map parse-bag contents)))
 
-  (defn quantified-bags-reducer [acc [bag & contents]]
-    (assoc acc bag (map parse-bag contents)))
+(def quantified-bags (->> input (map clean) (reduce quantified-bags-reducer {})))
 
-  (def quantified-bags (->> input (map clean-qtys) (reduce quantified-bags-reducer {})))
+(defn get-contents [bag]
+  (let [contents (get quantified-bags bag)]
+    (if (= '([nil 0]) contents) 0
+        (map (fn [[color, qty]] (if (some? color) [(get-contents color) qty] 0)) contents))))
 
-  (clojure.pprint/pprint quantified-bags)
+(defn compute-qty [contents]
+  (cond
+    (number? contents) contents
+    (vector? contents) (+ (last contents) (* (last contents) (compute-qty (first contents))))
+    (seq? contents) (apply + (map compute-qty contents))
+    :else 0))
 
-  (get quantified-bags "shiny gold")
-
-  (def part2 (loop [num-bags [] to-process ["shiny gold"]]
-               (if (empty? to-process) (reduce + num-bags)
-                   (let [contents (get quantified-bags (first to-process))
-                         bags (map first contents)
-                         qtys (map (comp #(try (Integer/parseInt %) (catch Exception e 1)) last) contents)]
-                     (println "contents" contents "bags" bags "qtys" qtys)
-                     (recur (conj num-bags (reduce + 1 qtys)) (concat (rest to-process) bags)))))))
+(defn -main []
+  (println "Advent of Code 2020-07.1:" part1)
+  (println "Advent of Code 2020-07.2:" (compute-qty (get-contents "shiny gold"))))

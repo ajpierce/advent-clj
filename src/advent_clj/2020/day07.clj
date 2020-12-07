@@ -41,8 +41,7 @@
     (number? contents) contents
     (vector? contents) (let [[more qty] contents]
                          (+ qty (* qty (compute-qty more))))
-    (seq? contents)    (apply + (map compute-qty contents))
-    :else 0))
+    (seq? contents)    (apply + (map compute-qty contents))))
 
 (defn -main []
   (println "Advent of Code 2020-07.1:" part1)

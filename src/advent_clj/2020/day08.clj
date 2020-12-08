@@ -1,6 +1,5 @@
 (ns advent-clj.2020.day08
-  (:require [advent-clj.core :refer [get-puzzle-input]]
-            [clojure.core.reducers :as r]))
+  (:require [advent-clj.core :refer [get-puzzle-input]]))
 
 (defn parse [^String x]
   (let [[_ inst delta] (re-matches #"^(\w{3}) (.*)$" x)]
@@ -30,9 +29,9 @@
 
 (def part2
   (->> (vec (range 0 (count input)))
-       (r/map run)
-       (r/filter some?)
-       (r/foldcat) first))
+       (map run)
+       (filter some?)
+       first))
 
 (defn -main []
   (println "Advent of Code 2020-08.1:" part1)

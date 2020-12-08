@@ -27,22 +27,12 @@
                         (= "jmp" inst) (recur acc           (+ idx delta) (conj seen idx))
                         :else          (recur acc           (inc idx)     (conj seen idx)))))))))
 
-
-;; Is a map/filter faster than another loop?
-(def part2a
-  (time
-   (->> (range 0 (count input))
-        (map run)
-        (filter some?)
-        first)))
-
-;; Time difference is negligible; same performance
-(def part2b
-  (time
-   (loop [idx 0]
-     (let [acc (run idx)]
-       (if (some? acc) acc (recur (inc idx)))))))
+(def part2
+  (->> (range 0 (count input))
+       (pmap run)
+       (filter some?)
+       first))
 
 (defn -main []
   (println "Advent of Code 2020-08.1:" part1)
-  (println "Advent of Code 2020-08.2:" part2a))
+  (println "Advent of Code 2020-08.2:" part2))

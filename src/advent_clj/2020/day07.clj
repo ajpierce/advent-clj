@@ -25,7 +25,7 @@
           (recur (apply conj eligible containers)
                  (concat (rest to-process) containers))))))
 
-(defn get-contents [bag]
+(defn get-contents [^String bag]
   (let [contents (get bags bag)]
     (if (= '([nil 0]) contents) 0
         (map (fn [[color, qty]] (if (some? color) [(get-contents color) qty] 0)) contents))))

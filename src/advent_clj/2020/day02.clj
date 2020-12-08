@@ -1,12 +1,12 @@
 (ns advent-clj.2020.day02
-  (:require [advent-clj.core :refer [get-puzzle-input]])
-  (:gen-class))
+  (:require [advent-clj.core :refer [get-puzzle-input]]
+            [clojure.string :as s]))
 
 (def input (get-puzzle-input "2020/day02.txt"))
 
 (defn format-entry [x]
-  (let [[rule letter pass] (clojure.string/split x #" ")]
-    (list (map #(Integer/parseInt %) (clojure.string/split rule #"-"))
+  (let [[rule letter pass] (s/split x #" ")]
+    (list (map #(Integer/parseInt %) (s/split rule #"-"))
           (first letter)
           pass)))
 

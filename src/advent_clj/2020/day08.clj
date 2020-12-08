@@ -28,7 +28,7 @@
                         :else          (recur acc           (inc idx)     (conj seen idx)))))))))
 
 (def part2
-  (->> (vec (range 0 (count input)))
+  (->> (range 0 (count input))
        (map run)
        (filter some?)
        first))

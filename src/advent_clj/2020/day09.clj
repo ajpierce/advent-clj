@@ -20,25 +20,12 @@
 
 (def part2
   (loop [subset-size 2]
-    (if (> subset-size (count input)) nil
-        (let [consec-nums (partition subset-size 1 input)
-              matching (filter #(= part1 (reduce + %)) consec-nums)]
-          (if (empty? matching) (recur (inc subset-size))
-              (+ (apply min (flatten matching)) (apply max (flatten matching))))))))
+    (let [consec-nums (partition subset-size 1 input)
+          matching (first (filter #(= part1 (reduce + %)) consec-nums))]
+      (cond (> subset-size (count input)) nil
+            (some some? matching) (+ (apply min matching) (apply max matching))
+            :else (recur (inc subset-size))))))
 
 (defn -main []
   (println "Advent of Code 2020-09.1:" part1)
   (println "Advent of Code 2020-09.2:" part2))
-
-
-(comment
-  "Here was my original solution to part 2. It was slower"
-  (def part2
-    (->> (for [subset-size (range 2 21)  ;; 20 is an arbitrary max subset size to keep it fast
-               :let [consec-nums (partition subset-size 1 input)
-                     matching (filter #(= part1 (reduce + %)) consec-nums)]
-               :when (not (empty? matching))]
-           matching)
-         flatten
-         (#(+ (apply min %) (apply max %)))))
-)

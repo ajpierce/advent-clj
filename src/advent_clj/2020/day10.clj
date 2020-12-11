@@ -1,8 +1,5 @@
 (ns advent-clj.2020.day10
-  (:require [advent-clj.core :refer [get-puzzle-input]]
-            [clojure.math.combinatorics :refer [combinations]]
-            [clojure.set :refer [difference union]]
-            [clojure.core.reducers :as r]))
+  (:require [advent-clj.core :refer [get-puzzle-input]]))
 
 (def input
   (->> (get-puzzle-input "2020/day10.txt")

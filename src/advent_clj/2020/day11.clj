@@ -32,9 +32,9 @@
 (def part1
   (let [prev-state (atom nil)]
     (->> (iterate step input)
-         (take-while (fn [x] (if (= @prev-state x)
-                               false
-                               (do (reset! prev-state x) true))))
+         (take-while (fn [x] (if (not= @prev-state x)
+                               (do (reset! prev-state x) true)
+                               false)))
          (last)
          (flatten)
          (filter #(= :occupied %))

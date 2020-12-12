@@ -16,51 +16,37 @@
 (def right? (partial = :R))
 (def forward? (partial = :F))
 
-(defn turn-right [dir]
-  (cond (west? dir) :N (north? dir) :E (east? dir) :S (south? dir) :W))
-(defn turn-left [dir] (nth (iterate turn-right dir) 3))
+(defn turn [xf dir deg arg]
+  (let [times (if (= 270 deg) 3 1)
+        f (cond (= 180 deg) (comp xf xf)
+                (right? dir) xf
+                (left? dir) (comp xf xf xf))]
+    (nth (iterate f arg) times)))
 
-(defn turn [bearing dir deg]
-  (let [f (cond (= 180 deg) (comp turn-right turn-right)
-                (left? dir) turn-left
-                (right? dir) turn-right)
-        times (case deg 180 1 90 1 270 3 :else 4)]
-    (nth (iterate f bearing) times)))
+(defn to-starboard [dir]
+  (cond (west? dir) :N (north? dir) :E (east? dir) :S (south? dir) :W))
 
 (def part1
-  (loop [dir :E x 0 y 0 remaining (map parse input)]
+  (loop [bearing :E x 0 y 0 remaining (map parse input)]
     (if (empty? remaining) (+ (Math/abs x) (Math/abs y))
         (let [[d n] (first remaining)
-              dx (cond (or (east? d) (and (east? dir) (forward? d))) n
-                       (or (west? d) (and (west? dir) (forward? d))) (* -1 n)
+              dx (cond (or (east? d) (and (east? bearing) (forward? d))) n
+                       (or (west? d) (and (west? bearing) (forward? d))) (* -1 n)
                        :else 0)
-              dy (cond (or (south? d) (and (south? dir) (forward? d))) n
-                       (or (north? d) (and (north? dir) (forward? d))) (* -1 n)
+              dy (cond (or (south? d) (and (south? bearing) (forward? d))) n
+                       (or (north? d) (and (north? bearing) (forward? d))) (* -1 n)
                        :else 0)
-              new-dir (if (contains? #{:R :L} d) (turn dir d n) dir)]
-          (recur new-dir (+ x dx) (+ y dy) (rest remaining))))))
+              new-bearing (if (contains? #{:R :L} d) (turn to-starboard d n bearing) bearing)]
+          (recur new-bearing (+ x dx) (+ y dy) (rest remaining))))))
 
-;; Given waypoint coords and a distance, returns [dx dy] of the move operation
-(defn move-forward [[x y] n] [(* 10 n) (* n y)])
-(defn rotate-cw [[x y]] [(* -1 y) x])
-(defn rotate-ccw [coords] (nth (iterate rotate-cw coords) 3))
-
-(-> [3 1] (#(iterate rotate-cw %)) (nth 2))
-(-> [3 1] (#(iterate rotate-ccw %)) (nth 1))
-
-(defn rotate [dir deg waypoint-coords]
-  (let [f (cond (= 180 deg) (comp rotate-cw rotate-cw)
-                (left? dir) rotate-ccw
-                (right? dir) rotate-cw)
-        times (case deg 180 1 90 1 270 3 :else 4)]
-    (println "rotating!" dir deg times)
-    (nth (iterate f waypoint-coords) times)))
+(defn ahead-full [[x y] n] [(* n x) (* n y)])
+(defn rotate-cw [[x y]] [y (* -1 x)])
 
 (def part2
-  (loop [[sx sy] [0 0] [wx wy] [10 1] remaining (map parse samp)]
+  (loop [[sx sy] [0 0] [wx wy] [10 1] remaining (map parse input)]
     (if (empty? remaining) (+ (Math/abs sx) (Math/abs sy))
         (let [[d n] (first remaining)
-              [dsx dsy] (if (forward? d) (move-forward [wx wy] n) [0 0])
+              [dsx dsy] (if (forward? d) (ahead-full [wx wy] n) [0 0])
               dwx (cond (east? d) n
                         (west? d) (* -1 n)
                         :else 0)
@@ -68,12 +54,10 @@
                         (south? d) (* -1 n)
                         :else 0)
               new-waypoint (if (contains? #{:R :L} d)
-                             (rotate d n [wx wy])
+                             (turn rotate-cw d n [wx wy])
                              [(+ wx dwx) (+ wy dwy)])]
-          (println (first remaining) "= sx" sx "sy" sy "dsx" dsx "dsy" dsy "wx" wx "wy" wy)
           (recur [(+ sx dsx) (+ sy dsy)] new-waypoint (rest remaining))))))
 
 (defn -main []
   (println "Advent of Code 2020.12.1:" part1)
   (println "Advent of Code 2020.12.2:" part2))
-

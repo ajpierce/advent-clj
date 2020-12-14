@@ -28,32 +28,29 @@
          (#(let [[bdt bid] %]
              (* bid (- bdt dt)))))))
 
-(defn parse-pt2 [in]
+(defn parse2 [in]
   (->> (s/split (last in) #",")
        (map-indexed (fn [idx busid]
                       (try [idx (Integer/parseInt busid)]
                            (catch Exception _ nil))))
        (remove nil?)))
 
-(defn valid? [offset busid i]
-  (zero? (mod (+ i offset) busid)))
+(defn time-warp
+  "Returns the next available time that satisfies the current bus/offset.
+  Step size is determined by all busses prior; see part2 below."
+  [t step offset busid]
+  (->> (iterate (partial + step) (+ t step))
+       (filter #(zero? (mod (+ % offset) busid)))
+       first))
 
-(defn satisfies-all? [validators n]
-  (every? true? (map #(% n) validators)))
-
-(defn fastest-bus-reducer [[_ fbus :as acc] [offset bus]]
-  (if (< fbus bus) [offset bus] acc))
-
-#_(def part2
-    (time
-     (let [busses (parse-pt2 samp)
-           validators (map (fn [[offset busid]] (partial valid? offset busid)) busses)
-           good? (partial satisfies-all? validators)
-           [fo fb] (reduce fastest-bus-reducer busses)]
-       (->> (iterate (partial + fb) (- fb fo))
-            (filter good?)
-            (first)))))
+(def part2
+  (loop [t 0 step 1 remaining (parse2 input)]
+    (if (empty? remaining) t
+        (let [[offset busid] (first remaining)]
+          (recur (time-warp t step offset busid)
+                 (* step busid)
+                 (rest remaining))))))
 
 (defn -main []
   (println "Advent of Code 2020.13.1:" part1)
-  #_(println "Advent of Code 2020.13.2:" part2))
+  (println "Advent of Code 2020.13.2:" part2))
